@@ -2,6 +2,7 @@ import React from 'react';
 import BasicInfo from './BasicInfo';
 import ServerInfo from './ServerInfo';
 import SoftwareInfo from './SoftwareInfo';
+import DeploymentInfo from './DeploymentInfo';
 
 class MasterForm extends React.Component {
   constructor(props) {
@@ -13,12 +14,15 @@ class MasterForm extends React.Component {
       environmentName: '',
       nexusPath: '',
       nexusCred: '',
+      deploymentDestination:'',
       noOfServerGroups: '',
       noOfServers: '',
       // serverGroups: [{ serverGroupId: "", serverGroupName: "" }]
       serverGroups: [],
-      servers: []
-
+      servers: [],
+      deploymentType: '',
+      fnAccountName:'',
+      fnCredentials:''
     }
   }
   handleChange = event => {
@@ -105,7 +109,7 @@ class MasterForm extends React.Component {
     softwares.availableSoftwares = [];
     softwares.selectedAvailableSoftwares = [];
     softwares.selectedChoosenSoftwares = [];
-    
+
     serverGroups[i] = { ...serverGroups[i], softwares: softwares };
 
     this.setState({ ...this.state, serverGroups: serverGroups });
@@ -142,18 +146,18 @@ class MasterForm extends React.Component {
     softwares.availableSoftwares = availableSoftwares;
     softwares.selectedAvailableSoftwares = [];
     softwares.selectedChoosenSoftwares = [];
-    
+
     serverGroups[i] = { ...serverGroups[i], softwares: softwares };
 
     this.setState({ ...this.state, serverGroups: serverGroups });
   }
-  onSoftwareChoosenSelect = (i,value) => {
+  onSoftwareChoosenSelect = (i, value) => {
     let serverGroups = [...this.state.serverGroups];
     let softwares = serverGroups[i].softwares;
-    
+
     softwares.selectedChoosenSoftwares = value;
 
-    serverGroups[i] = { ...serverGroups[i],softwares: softwares };
+    serverGroups[i] = { ...serverGroups[i], softwares: softwares };
     this.setState({ ...this.state, serverGroups: serverGroups });
   }
 
@@ -188,7 +192,7 @@ class MasterForm extends React.Component {
 
   _next = () => {
     let currentStep = this.state.currentStep
-    currentStep = currentStep >= 2 ? 3 : currentStep + 1
+    currentStep = currentStep >= 3 ? 4 : currentStep + 1
     this.setState({
       currentStep: currentStep
     });
@@ -221,7 +225,7 @@ class MasterForm extends React.Component {
 
   nextButton() {
     let currentStep = this.state.currentStep;
-    if (currentStep < 3) {
+    if (currentStep < 4) {
       return (
         <button
           className="ui blue button"
@@ -258,6 +262,13 @@ class MasterForm extends React.Component {
               <div className="description">Choose Software</div>
             </div>
           </div>
+          <div className={this.state.currentStep === 4 ? 'active step' : 'step'}>
+            <i className="thumbtack icon"></i>
+            <div className="content">
+              <div className="title">Deployment</div>
+              <div className="description">Enter deployment related details</div>
+            </div>
+          </div>
         </div>
         <form onSubmit={this.handleSubmit}>
           <BasicInfo currentStep={this.state.currentStep}
@@ -266,7 +277,8 @@ class MasterForm extends React.Component {
             clientName={this.state.clientName}
             environmentName={this.state.environmentName}
             nexusPath={this.state.nexusPath}
-            nexusCred={this.state.nexusCred} />
+            nexusCred={this.state.nexusCred}
+            deploymentDestination={this.state.deploymentDestination} />
 
           <ServerInfo currentStep={this.state.currentStep}
             handleChange={this.handleChange}
@@ -290,8 +302,13 @@ class MasterForm extends React.Component {
             ItemsMoveLeft={this.ItemsMoveLeft}
             ItemsMoveAllLeft={this.ItemsMoveAllLeft} />
 
+          <DeploymentInfo currentStep={this.state.currentStep}
+            handleChange={this.handleChange}
+            deploymentType={this.state.deploymentType}
+            fnAccountName={this.state.fnAccountName}
+            fnCredentials={this.state.fnCredentials}
+          />
           <div className="mt-md-5">
-
             {this.previousButton()}
             {this.nextButton()}
           </div>

@@ -54,12 +54,6 @@ class SoftwareInfo extends React.Component {
 
           </div>
         </div>
-
-        <div className="fields float-right">
-          <div className="eight wide field">
-            <button className="ui green button">Submit</button>
-          </div>
-        </div>
       </div>
     );
   }
