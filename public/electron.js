@@ -34,18 +34,41 @@ app.on('activate', () => {
   }
 });
 
+ipc.on("configuration:get", () => {
+  //to do read from file and restore
+  const INITIAL_STATE = {
+    loading: true,
+    currentStep: 1,
+    fpmVersion: '',
+    clientName: '',
+    environmentName: '',
+    nexusPath: '',
+    nexusCred: '',
+    deploymentDestination: '',
+    noOfServerGroups: '',
+    noOfServers: '',
+    serverGroups: [],
+    servers: [],
+    deploymentType: '',
+    fnAccountName: '',
+    fnCredentials: ''
+  };
+  console.log('sending from electron');
+  mainWindow.webContents.send("configuration:list", INITIAL_STATE);
+});
+
 ipc.on("scripts:get", (event) => {
-  const scriptPath = path.join(__dirname,"data","ScriptData.json");
+  const scriptPath = path.join(__dirname, "data", "ScriptData.json");
 
   fs.readFile(scriptPath, (err, data) => {
     if (err) throw err;
     const scriptResponse = JSON.parse(data)['results'];
-    mainWindow.webContents.send("scripts:list",scriptResponse);
+    mainWindow.webContents.send("scripts:list", scriptResponse);
   });
 });
 
 ipc.on('exec-shellscript', function (event, data) {
-  mainWindow.webContents.send("script:execution:inprogress",data);
+  mainWindow.webContents.send("script:execution:inprogress", data);
   // Create the PS Instance
   let ps = new powershell({
     executionPolicy: 'Bypass',
@@ -58,7 +81,7 @@ ipc.on('exec-shellscript', function (event, data) {
         return `{${parm.paramName} : ${parm.paramValue}},`
       })
     ]));
-   
+
   ps.invoke()
     .then(output => {
       const responseop = {

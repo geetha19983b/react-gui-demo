@@ -1,4 +1,6 @@
 import React from 'react';
+import { connect } from "react-redux";
+import * as configurationActions from "../actions/configuration";
 
 class DeploymentInfo extends React.Component {
   renderAccountUI() {
@@ -72,14 +74,20 @@ class DeploymentInfo extends React.Component {
           </div>
         </div>
         {this.props.deploymentType && this.renderAccountUI()}
-        <div className="fields float-right">
-          <div className="eight wide field">
-            <button className="ui green button">Submit</button>
-          </div>
-        </div>
+       
       </div>
     )
   }
 }
 
-export default DeploymentInfo;
+
+const mapStateToProps = ({ configuration }) => {
+  return configuration;
+};
+
+export default connect(
+  mapStateToProps,
+  {
+    ...configurationActions,
+  }
+)(DeploymentInfo);

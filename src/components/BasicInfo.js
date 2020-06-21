@@ -1,5 +1,6 @@
 import React from 'react';
-
+import { connect } from "react-redux";
+import * as configurationActions from "../actions/configuration";
 
 class BasicInfo extends React.Component {
   render() {
@@ -66,4 +67,14 @@ class BasicInfo extends React.Component {
     );
   }
 }
-export default BasicInfo;
+
+const mapStateToProps = ({ configuration }) => {
+  return configuration;
+};
+
+export default connect(
+  mapStateToProps,
+  {
+    ...configurationActions,
+  }
+)(BasicInfo);

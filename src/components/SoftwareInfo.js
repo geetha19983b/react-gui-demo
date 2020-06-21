@@ -1,4 +1,6 @@
 import React from 'react';
+import { connect } from "react-redux";
+import * as configurationActions from "../actions/configuration";
 import ListBox from './ListBox';
 import ListActions from './ListActions';
 
@@ -17,14 +19,14 @@ class SoftwareInfo extends React.Component {
             selectedValue={el.softwares.selectedAvailableSoftwares}
             placeholder='Please select a make...'
             textPropertyName='name'
-            OnSelect={this.props.onSoftwareAvailableSelect.bind(this, i)} />
+            OnSelect={(value) => this.props.selectAvailableSoftware(i,value)} />
         </div>
         <div>
           <ListActions 
-            ItemsMoveAllRight={this.props.ItemsMoveAllRight.bind(this,i)}
-            ItemsMoveRight={this.props.ItemsMoveRight.bind(this,i)}
-            ItemsMoveLeft={this.props.ItemsMoveLeft.bind(this,i)}
-            ItemsMoveAllLeft={this.props.ItemsMoveAllLeft.bind(this,i)}
+            ItemsMoveAllRight={() => this.props.softwareItemsMoveAllRight(i)}
+            ItemsMoveRight={() => this.props.softwareItemsMoveRight(i)}
+            ItemsMoveLeft={() => this.props.softwareItemsMoveLeft(i)}
+            ItemsMoveAllLeft={() => this.props.softwareItemsMoveAllLeft(i)}
           />
 
         </div>
@@ -34,7 +36,7 @@ class SoftwareInfo extends React.Component {
             valuePropertyName='id'
             selectedValue={el.softwares.selectedChoosenSoftwares}
             textPropertyName='name'
-            OnSelect={this.props.onSoftwareChoosenSelect.bind(this, i)} />
+            OnSelect={(value) => this.props.selectChoosenSoftware(i,value)} />
         </div>
 
       </div>
@@ -59,4 +61,14 @@ class SoftwareInfo extends React.Component {
   }
 }
 
-export default SoftwareInfo;
+const mapStateToProps = ({ configuration }) => {
+  return configuration;
+};
+
+export default connect(
+  mapStateToProps,
+  {
+    ...configurationActions,
+  }
+)(SoftwareInfo);
+
