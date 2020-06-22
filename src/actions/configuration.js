@@ -3,7 +3,8 @@ import {
   PREVIOUS, NEXT, HANDLE_CHANGE, ADD_SERVERGROUPS_SERVERS, HANDLE_SERVERGROUP_CHANGE,
   REMOVE_SERVERGROUP, SELECT_AVAILABLE_SOFWARE, SOFTWARE_ITEMS_MOVE_RIGHT,
   SOFTWARE_ITEMS_MOVE_ALL_RIGHT,SOFTWARE_ITEMS_MOVE_LEFT,SOFTWARE_ITEMS_MOVE_ALL_LEFT,
-  SELECT_CHOOSEN_SOFTWARE, HANDLE_SERVER_CHANGE,REMOVE_SERVER
+  SELECT_CHOOSEN_SOFTWARE, HANDLE_SERVER_CHANGE,REMOVE_SERVER,
+  START_SCRIPT_EXECUTION,SCRIPT_EXECUTION_STATUS
 } from "../actions/types";
 const { ipcRenderer } = window.require("electron");
 
@@ -18,6 +19,18 @@ export const getConfiguration = () => dispatch => {
   });
 };
 
+export const startScriptExecution = () => {
+  return { type: START_SCRIPT_EXECUTION };
+};
+
+export const getScriptExecutionStatus = () => (dispatch,getState) => {
+  const configData = getState().configuration;
+  ipcRenderer.send("scriptExecution:start",configData);
+  ipcRenderer.on("scriptExecution:status", (event, message) => {
+    dispatch({ type: SCRIPT_EXECUTION_STATUS, payload: message });
+  });
+
+}
 export const previous = (step) => {
   return { type: PREVIOUS, payload: step };
 }
@@ -106,3 +119,4 @@ export const softwareItemsMoveAllLeft = (index) => {
     type:SOFTWARE_ITEMS_MOVE_ALL_LEFT,payload:index
   }
 }
+

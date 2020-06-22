@@ -3,7 +3,7 @@ import {
   PREVIOUS, NEXT, HANDLE_CHANGE, ADD_SERVERGROUPS_SERVERS, HANDLE_SERVERGROUP_CHANGE,
   REMOVE_SERVERGROUP, SELECT_AVAILABLE_SOFWARE, SOFTWARE_ITEMS_MOVE_RIGHT, SOFTWARE_ITEMS_MOVE_ALL_RIGHT,
   SOFTWARE_ITEMS_MOVE_LEFT, SOFTWARE_ITEMS_MOVE_ALL_LEFT, SELECT_CHOOSEN_SOFTWARE, HANDLE_SERVER_CHANGE,
-  REMOVE_SERVER
+  REMOVE_SERVER, START_SCRIPT_EXECUTION, SCRIPT_EXECUTION_STATUS
 } from "../actions/types";
 
 
@@ -22,18 +22,26 @@ const INITIAL_STATE = {
   servers: [],
   deploymentType: '',
   fnAccountName: '',
-  fnCredentials: ''
+  fnCredentials: '',
+  scriptExecutionStatus: '',
+  scriptExecutionMessage:'',
 };
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case START_FETCHING_CONFIGURATION:
       return { ...state, loading: true };
-
     case GET_CONFIGURATION:
       //console.log(action.payload);
       //return { ...state, loading: false};
-      return {...action.payload,loading:false}
+      return { ...action.payload, loading: false }
+    case START_SCRIPT_EXECUTION:
+      return { ...state, scriptExecutionStatus: 'STARTING' };
+
+    case SCRIPT_EXECUTION_STATUS:
+      const {status,message} = action.payload;
+      return { ...state, scriptExecutionStatus: status,
+        scriptExecutionMessage: message}
 
     case PREVIOUS:
       return { ...state, currentStep: action.payload };
@@ -48,18 +56,18 @@ export default (state = INITIAL_STATE, action) => {
     case ADD_SERVERGROUPS_SERVERS:
       const { servername, servervalue } = action.payload;
       if (servername === 'noOfServerGroups' && servervalue > 0) {
-        return { ...state, serverGroups: addServerGroupsAndServers(servername, servervalue,state) };
+        return { ...state, serverGroups: addServerGroupsAndServers(servername, servervalue, state) };
       }
       if (servername === 'noOfServers' && servervalue > 0) {
-        return { ...state, servers: addServerGroupsAndServers(servername, servervalue,state) };
+        return { ...state, servers: addServerGroupsAndServers(servername, servervalue, state) };
       }
       return state;
 
-    case HANDLE_SERVERGROUP_CHANGE:   
-      return { ...state, serverGroups: handleServerGroupChange(action.payload,state) };
+    case HANDLE_SERVERGROUP_CHANGE:
+      return { ...state, serverGroups: handleServerGroupChange(action.payload, state) };
 
     case REMOVE_SERVERGROUP:
-       return { ...state, serverGroups: removeServerGroups(action.payload, state) };
+      return { ...state, serverGroups: removeServerGroups(action.payload, state) };
 
     case HANDLE_SERVER_CHANGE:
       return {
@@ -67,7 +75,7 @@ export default (state = INITIAL_STATE, action) => {
         servers: handleServerChange(action.payload, state)
       }
     case REMOVE_SERVER:
-      
+
       return { ...state, servers: removeServers(action.payload, state) };
 
     case SELECT_AVAILABLE_SOFWARE:
@@ -115,12 +123,12 @@ function removeServers(index, state) {
   servers.splice(index, 1);
   return servers;
 }
-function handleServerGroupChange(payload,state){
+function handleServerGroupChange(payload, state) {
   const { index, event } = payload;
   const { name, value } = event.target;
-    let serverGroups = [...state.serverGroups];
-    serverGroups[index] = { ...serverGroups[index], [name]: value };
-    return serverGroups;
+  let serverGroups = [...state.serverGroups];
+  serverGroups[index] = { ...serverGroups[index], [name]: value };
+  return serverGroups;
 }
 function handleServerChange(payload, state) {
   const { index, event } = payload;
@@ -217,10 +225,10 @@ function softwareItemsMoveLeft(i, state) {
   serverGroups[i] = { ...serverGroups[i], softwares: softwares };
   return serverGroups;
 }
-function addServerGroupsAndServers(name, value,state) {
+function addServerGroupsAndServers(name, value, state) {
   if (name === 'noOfServerGroups' && value > 0) {
     let serverGroups = [];
-    for (let i = 1; i <=  state.noOfServerGroups; i++) {
+    for (let i = 1; i <= state.noOfServerGroups; i++) {
       serverGroups.push({
         serverGroupId: `SG_${i}`, serverGroupName: "", softwares: {
           availableSoftwares: [{ "id": 1, "name": 'winzip' }, { "id": 2, "name": 'node' },

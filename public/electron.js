@@ -53,9 +53,25 @@ ipc.on("configuration:get", () => {
     fnAccountName: '',
     fnCredentials: ''
   };
-  console.log('sending from electron');
   mainWindow.webContents.send("configuration:list", INITIAL_STATE);
 });
+
+ipc.on("scriptExecution:start", (event, configData) => {
+  // convert JSON object to string
+  const data = JSON.stringify(configData);
+  let executionResult = {status:'',message:''}
+  try {
+    fs.writeFileSync('output/config.json', data);
+    executionResult.status = 'INPROGRESS';
+    executionResult.message = 'Config File Write Successful';
+    mainWindow.webContents.send("scriptExecution:status",executionResult);
+  } catch (error) {
+    executionResult.status = 'ERRORRED';
+    executionResult.message = 'Config File Write Errored' + error;
+    mainWindow.webContents.send("scriptExecution:status", executionResult);
+  }
+});
+
 
 ipc.on("scripts:get", (event) => {
   const scriptPath = path.join(__dirname, "data", "ScriptData.json");

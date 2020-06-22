@@ -1,0 +1,17 @@
+{
+"servergroups":[
+  {
+   "sgname":"sg1",
+   "servers":[
+      {
+	    "srname":"srv1"
+		"noOfSoftwaresToBeInstalled":5,
+		"noOfSoftwaresInstalled":0,
+		"noOfSoftwaresInstallationInProgress":0,
+		"noOfSoftwaresInstallationErrored":0		
+      }
+    ]
+   }
+]
+"OverallStatus":"InProgress"
+}
