@@ -11,6 +11,8 @@
     "electron": "^9.0.4",
     "electron-builder": "^22.7.0",
     "electron-is-dev": "^1.2.0",
+    "log-timestamp": "^0.3.0",
+    "md5": "^2.2.1",
     "node-powershell": "^4.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",

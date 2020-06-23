@@ -6,6 +6,8 @@ const ipc = electron.ipcMain;
 const isDev = require('electron-is-dev');
 const powershell = require('node-powershell');
 const fs = require("fs");
+const md5 = require('md5');
+require('log-timestamp');
 
 let mainWindow;
 
@@ -59,12 +61,13 @@ ipc.on("configuration:get", () => {
 ipc.on("scriptExecution:start", (event, configData) => {
   // convert JSON object to string
   const data = JSON.stringify(configData);
-  let executionResult = {status:'',message:''}
+  let executionResult = { status: '', message: '' }
   try {
     fs.writeFileSync('output/config.json', data);
     executionResult.status = 'INPROGRESS';
     executionResult.message = 'Config File Write Successful';
-    mainWindow.webContents.send("scriptExecution:status",executionResult);
+    watchForLogFileChanges();
+    mainWindow.webContents.send("scriptExecution:status", executionResult);
   } catch (error) {
     executionResult.status = 'ERRORRED';
     executionResult.message = 'Config File Write Errored' + error;
@@ -115,7 +118,35 @@ ipc.on('exec-shellscript', function (event, data) {
       mainWindow.webContents.send('scriptResults', responseop);
       ps.dispose()
     })
-
-
 });
 
+function watchForLogFileChanges() {
+  const scriptLogFile = 'output/log.json';
+
+  console.log(`Watching for file changes on ${scriptLogFile}`);
+
+  let md5Previous = null;
+
+  fs.watch(scriptLogFile, (event, filename) => {
+    if (filename) {
+      const md5Current = md5(fs.readFileSync(scriptLogFile));
+      if (md5Current === md5Previous) {
+        return;
+      }
+      md5Previous = md5Current;
+      console.log(`${filename} file Changed`);
+      readLogFile();
+    }
+  });
+}
+
+function readLogFile() {
+  const scriptLogFilePath = 'output/log.json';
+  fs.readFile(scriptLogFilePath, { encoding: 'utf-8' }, function (err, data) {
+    if (!err) {
+      console.log('received data: ' + data);
+    } else {
+      console.log(err);
+    }
+  });
+}
