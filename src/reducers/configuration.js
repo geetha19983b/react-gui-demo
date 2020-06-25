@@ -24,7 +24,12 @@ const INITIAL_STATE = {
   fnAccountName: '',
   fnCredentials: '',
   scriptExecutionStatus: '',
-  scriptExecutionMessage:'',
+  scriptExecutionMessage: '',
+  errors: {
+    fpmVersion: '',
+    clientName: '',
+    nexusPath: '',
+  }
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -39,9 +44,11 @@ export default (state = INITIAL_STATE, action) => {
       return { ...state, scriptExecutionStatus: 'STARTING' };
 
     case SCRIPT_EXECUTION_STATUS:
-      const {status,message} = action.payload;
-      return { ...state, scriptExecutionStatus: status,
-        scriptExecutionMessage: message}
+      const { status, message } = action.payload;
+      return {
+        ...state, scriptExecutionStatus: status,
+        scriptExecutionMessage: message
+      }
 
     case PREVIOUS:
       return { ...state, currentStep: action.payload };
@@ -51,7 +58,8 @@ export default (state = INITIAL_STATE, action) => {
 
     case HANDLE_CHANGE:
       const { name, value } = action.payload.target;
-      return { ...state, [name]: value };
+      let errors = handleError(action.payload.target, state);    
+      return { ...state, [name]: value, errors: errors };
 
     case ADD_SERVERGROUPS_SERVERS:
       const { servername, servervalue } = action.payload;
@@ -110,6 +118,43 @@ export default (state = INITIAL_STATE, action) => {
       };
     default:
       return state;
+  }
+
+}
+
+function handleError(payload, state) {
+  const { name, value } = payload;
+
+  let errors = state.errors;
+  let errorMsg = '';
+
+  switch (name) {
+    case 'fpmVersion':
+      errorMsg=
+        value.length < 2
+          ? 'FPM Version must be at least 2 characters long!'
+          : '';
+      break;
+    case 'clientName':
+      errorMsg=
+        value.length < 3
+          ? 'Client Name must be at least 2 characters long!'
+          : '';
+      break;
+    case 'nexusPath':
+      errorMsg=
+        value.nexusPath < 5
+          ? 'NexusPath must be at least 5 characters long!'
+          : '';
+      break;
+    default:
+      break;
+  }
+
+  //this.setState({errors, [name]: value});
+  return {
+    ...errors,
+    [name]:errorMsg
   }
 
 }

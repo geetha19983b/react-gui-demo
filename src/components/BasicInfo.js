@@ -16,12 +16,16 @@ class BasicInfo extends React.Component {
             <input type="text" name="fpmVersion" placeholder="FPM Version #"
               value={this.props.fpmVersion}
               onChange={this.props.handleChange} />
+            {this.props.errors.fpmVersion && this.props.errors.fpmVersion.length > 0 &&
+              <span className='ui error message'>{this.props.errors.fpmVersion}</span>}
           </div>
           <div className="eight wide field">
             <label>Client Name</label>
             <input type="text" name="clientName" placeholder="Client Name"
               value={this.props.clientName}
               onChange={this.props.handleChange} />
+            {this.props.errors.clientName && this.props.errors.clientName.length > 0 &&
+              <span className='ui error message'>{this.props.errors.clientName}</span>}
           </div>
         </div>
         <div className="fields">
@@ -36,6 +40,8 @@ class BasicInfo extends React.Component {
             <input type="text" placeholder="Nexus Path" name="nexusPath"
               value={this.props.nexusPath}
               onChange={this.props.handleChange} />
+            {this.props.errors.nexusPath && this.props.errors.nexusPath.length > 0 &&
+              <span className='ui error message'>{this.props.errors.nexusPath}</span>}
           </div>
           <div className="six wide field">
             <label>Nexus Credential</label>

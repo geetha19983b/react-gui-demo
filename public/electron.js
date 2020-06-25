@@ -53,7 +53,14 @@ ipc.on("configuration:get", () => {
     servers: [],
     deploymentType: '',
     fnAccountName: '',
-    fnCredentials: ''
+    fnCredentials: '',
+    scriptExecutionStatus: '',
+    scriptExecutionMessage: '',
+    errors: {
+      fpmVersion: '',
+      clientName: '',
+      nexusPath: '',
+    }
   };
   mainWindow.webContents.send("configuration:list", INITIAL_STATE);
 });
